@@ -1,9 +1,8 @@
 import { Cluster } from "puppeteer-cluster";
 import { writeFile, readFile } from "fs";
-import axios from "axios";
 
 (async () => {
-  const auth = "brd-customer-hl_ad9d3ed0-zone-scraping_browser1:c3urgr87khtn";
+  const auth = process.env.BRIGHT_DATA_AUTH;
 
   // Create a cluster with as many workers as needed
   const cluster = await Cluster.launch({
