@@ -2,7 +2,7 @@ import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 analyzer = SentimentIntensityAnalyzer()
-df = pd.read_csv("review_data_12k.csv")
+df = pd.read_json("google-review-data-500-raw.json")
 
 # a pandas series
 description_column = df["description"]
@@ -22,6 +22,6 @@ for description in description_column:
     compound_list.append(compound)
 
 df["compound_score"] = compound_list
-df["sentiment_category"] = sentiment_category
+df["sentiment"] = sentiment_category
 
-df.to_csv("review_data_12k.csv", index=False)
+df.to_json(path_or_buf="google-review-data-500-raw.json", indent=4, orient="records")
