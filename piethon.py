@@ -4,15 +4,19 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 client = OpenAI()
 analyzer = SentimentIntensityAnalyzer()
-df = pd.read_json("google-review-data-500-raw.json")
+df = pd.read_json("testdata.json")
 
 # a pandas series
 description_column = df["description"]
 reviewer_information = df["reviewer_info"]
+owner_response = df["owner_response"]
 reviewer_list = reviewer_information.tolist()
 
 
-def generate_response(description, reviewer):
+def generate_response(description, reviewer, owner_response):
+    if owner_response or owner_response is not None:
+        return "null"
+
     name = reviewer["name"]
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -41,27 +45,23 @@ def analyze_sentiment(description):
     sentiment_score = analyzer.polarity_scores(description)
     compound = sentiment_score["compound"]
     if compound >= 0.05:
-        sentiment_category.append("positive")
+        return "positive"
 
     elif compound <= -0.05:
-        sentiment_category.append("negative")
+        return "negative"
     else:
-        sentiment_category.append("neutral")
-
-    return sentiment_category
+        return "neutral"
 
 
 def analyze_compound(description):
     sentiment_score = analyzer.polarity_scores(description)
-    compound_list.append(sentiment_score)
-
-    return compound_list
+    return sentiment_score
 
 
-# df["compound_score"] = list(map(analyze_compound, description_column))
-# df["sentiment"] = list(map(analyze_sentiment, description_column))
+df["compound_score"] = list(map(analyze_compound, description_column))
+df["sentiment"] = list(map(analyze_sentiment, description_column))
 df["generated_response"] = list(
-    map(generate_response, description_column, reviewer_list)
+    map(generate_response, description_column, reviewer_list, owner_response)
 )
 
-df.to_json(path_or_buf="google-review-data-500-raw.json", indent=4, orient="records")
+df.to_json(path_or_buf="testdata.json", indent=4, orient="records")
