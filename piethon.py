@@ -4,7 +4,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 client = OpenAI()
 analyzer = SentimentIntensityAnalyzer()
-df = pd.read_json("testdata.json")
+df = pd.read_json("google-review-data-500-raw.json")
 
 # a pandas series
 description_column = df["description"]
@@ -36,11 +36,6 @@ def generate_response(description, reviewer, owner_response):
     return completion.choices[0].message.content
 
 
-# TODO: fix sentiment functions later
-compound_list = []
-sentiment_category = []
-
-
 def analyze_sentiment(description):
     sentiment_score = analyzer.polarity_scores(description)
     compound = sentiment_score["compound"]
@@ -64,4 +59,4 @@ df["generated_response"] = list(
     map(generate_response, description_column, reviewer_list, owner_response)
 )
 
-df.to_json(path_or_buf="testdata.json", indent=4, orient="records")
+df.to_json(path_or_buf="google-review-data-500-raw.json", indent=4, orient="records")
