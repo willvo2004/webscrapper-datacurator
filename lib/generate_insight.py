@@ -43,7 +43,7 @@ async def generate_insight(conn, review, index):
 
 
 async def grab_rows(conn):
-    rows = await conn.fetch("SELECT * FROM reviews")
+    rows = await conn.fetch("SELECT * FROM reviews WHERE id > 437")
     return rows
 
 
