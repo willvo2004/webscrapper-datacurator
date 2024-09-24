@@ -10,14 +10,11 @@ pdf = pd.read_json("positive_responses.json")
 ndf = pd.read_json("negative_response.json")
 mdf = pd.read_json("neutral_response.json")
 
-
-def write_positive():
-    response = pdf["owner_response"]
-    response.to_sql("positie_response", db, if_exists="replace")
+pdf.to_sql("sampled_positive_responses", db, if_exists="replace")
+ndf.to_sql("sampled_negative_responses", db, if_exists="replace")
+mdf.to_sql("sampled_neutral_responses", db, if_exists="replace")
 
 
 connection = psycopg2.connect(connection_string)
 connection.autocommit = True
 curosr = connection.cursor()
-
-write_positive()
