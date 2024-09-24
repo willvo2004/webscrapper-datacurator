@@ -1,6 +1,6 @@
-import psycopg2
-import pandas as pd
 from sqlalchemy import create_engine
+import pandas as pd
+import psycopg2
 
 connection_string = "postgresql://williamvo@localhost:5432/response"
 db = create_engine(connection_string)
@@ -26,6 +26,7 @@ generated_neutral_reviews = gfilter[gfilter["sentiment"] == "neutral"]
 # combine human responses and generated responses
 def grab_neutral():
     human_response = owner_neutral_reviews["owner_response"]
+    # TODO include the name of the reviewer
     generated_response = generated_neutral_reviews["generated_response"]
 
     responses = human_response.combine_first(generated_response)
@@ -51,6 +52,11 @@ def grab_positive():
     return responses
 
 
+ddf = pd.read_json("../google-review-data.json")
+all_reviews = ddf["description"]
+
+all_reviews.to_sql("reviews", db, if_exists="replace")
+
 connection = psycopg2.connect(connection_string)
 connection.autocommit = True
 cursor = connection.cursor()
@@ -58,4 +64,3 @@ cursor = connection.cursor()
 x = grab_neutral()
 y = grab_negative()
 z = grab_positive()
-print(x)
